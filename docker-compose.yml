@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: wu-places-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: wu_places
+    ports:
+      - "5432:5432"
+    volumes:
+      - wu_places_data:/var/lib/postgresql/data
+volumes:
+  wu_places_data:
