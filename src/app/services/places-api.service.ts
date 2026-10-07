@@ -8,7 +8,7 @@ import { Place } from '../models/place.model';
 @Injectable({ providedIn: 'root' })
 export class PlacesApiService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/api';
+  private readonly baseUrl = 'https://wu-places-directory.onrender.com/api';
 
   getAll(search = '', typeId?: number): Observable<Place[]> {
     let params = new HttpParams();
