@@ -16,19 +16,61 @@ model PlaceType {
 }
 
 model Place {
-  id          Int       @id @default(autoincrement())
-  name        String    @db.VarChar(200)
-  code        String    @unique @db.VarChar(30)
-  description String    @default("") @db.Text
-  imageUrl    String    @default("") @db.Text
+  id          Int          @id @default(autoincrement())
+  name        String       @db.VarChar(200)
+  code        String       @unique @db.VarChar(30)
+  description String       @default("") @db.Text
+  // รูปปก (เท่ากับรูปแรกใน images เสมอ เก็บไว้เพื่อให้ API เดิมยังใช้ได้)
+  imageUrl    String       @default("") @db.Text
   latitude    Float?
   longitude   Float?
   floors      Int?
   typeId      Int
-  type        PlaceType @relation(fields: [typeId], references: [id], onDelete: Restrict)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  type        PlaceType    @relation(fields: [typeId], references: [id], onDelete: Restrict)
+  images      PlaceImage[]
+  rooms       Room[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   @@index([name])
   @@index([typeId])
+}
+
+// รูปภาพของอาคาร (หลายรูปต่ออาคาร เรียงตาม sortOrder, รูปแรก = รูปปก)
+model PlaceImage {
+  id        Int      @id @default(autoincrement())
+  placeId   Int
+  place     Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  url       String   @db.Text
+  caption   String   @default("") @db.VarChar(200)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([placeId, sortOrder])
+}
+
+// รายละเอียดภายในอาคาร: ห้อง / พื้นที่ใช้งานในแต่ละชั้น
+model Room {
+  id          Int      @id @default(autoincrement())
+  placeId     Int
+  place       Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  floor       Int
+  name        String   @db.VarChar(150)
+  code        String   @default("") @db.VarChar(30)
+  category    String   @default("ห้องเรียน") @db.VarChar(50)
+  capacity    Int?
+  description String   @default("") @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([placeId, floor])
+}
+
+// บัญชีผู้ดูแลระบบ (สร้าง/อัปเดตอัตโนมัติจาก ADMIN_USERNAME + ADMIN_PASSWORD ใน .env)
+model AdminUser {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique @db.VarChar(50)
+  passwordHash String   @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }

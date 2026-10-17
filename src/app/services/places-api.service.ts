@@ -1,14 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Place } from '../models/place.model';
+import { Place, PlacePayload } from '../models/place.model';
+import { API_URL } from './api.config';
 
-// API client scaffold for the NestJS backend. Use this service when migrating pages
-// away from PlaceStoreService (localStorage prototype).
+// API client สำหรับ NestJS backend (การเพิ่ม/แก้ไข/ลบ ต้องล็อกอินแอดมิน — auth.interceptor แนบ token ให้อัตโนมัติ)
 @Injectable({ providedIn: 'root' })
 export class PlacesApiService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'https://wu-places-directory.onrender.com/api';
+  private readonly baseUrl = API_URL;
 
   getAll(search = '', typeId?: number): Observable<Place[]> {
     let params = new HttpParams();
@@ -17,8 +17,8 @@ export class PlacesApiService {
     return this.http.get<Place[]>(`${this.baseUrl}/places`, { params });
   }
   getById(id: number): Observable<Place> { return this.http.get<Place>(`${this.baseUrl}/places/${id}`); }
-  create(data: Omit<Place, 'id'>): Observable<Place> { return this.http.post<Place>(`${this.baseUrl}/places`, data); }
-  update(id: number, data: Partial<Omit<Place, 'id'>>): Observable<Place> { return this.http.patch<Place>(`${this.baseUrl}/places/${id}`, data); }
+  create(data: PlacePayload): Observable<Place> { return this.http.post<Place>(`${this.baseUrl}/places`, data); }
+  update(id: number, data: Partial<PlacePayload>): Observable<Place> { return this.http.patch<Place>(`${this.baseUrl}/places/${id}`, data); }
   delete(id: number): Observable<{ message: string }> { return this.http.delete<{ message: string }>(`${this.baseUrl}/places/${id}`); }
   getTypes(): Observable<{ id: number; name: string }[]> { return this.http.get<{ id: number; name: string }[]>(`${this.baseUrl}/place-types`); }
 }

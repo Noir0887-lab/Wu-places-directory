@@ -6,6 +6,16 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f97316">
+  <meta name="color-scheme" content="light dark">
+  <!-- ตั้งค่าโหมดสว่าง/มืดก่อนหน้าเว็บโหลด เพื่อไม่ให้จอกะพริบสีขาวตอนเปิดในโหมดมืด -->
+  <script>
+    try {
+      var saved = localStorage.getItem('wu-theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    } catch (e) {}
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
